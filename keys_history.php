@@ -85,11 +85,11 @@ $dateToIntern   = $objDateTo->format('Y-m-d');
 $dateToHtml     = $objDateTo->format($gSettingsManager->getString('system_date'));
 
 // create select statement with all necessary data
-$sql = 'SELECT kml_kmk_id, kml_kmf_id,  kml_usr_id_create, kml_timestamp_create, kml_value_old, kml_value_new
-          FROM '.TBL_KEYMANAGER_LOG.'
-         WHERE kml_timestamp_create BETWEEN ? AND ? 
-           AND kml_kmk_id = ?
-      ORDER BY kml_timestamp_create DESC';
+$sql = 'SELECT iml_imk_id, iml_imf_id,  iml_usr_id_create, iml_timestamp_create, iml_value_old, iml_value_new
+          FROM '.TBL_INVENTORY_MANAGER_LOG.'
+         WHERE iml_timestamp_create BETWEEN ? AND ? 
+           AND iml_imk_id = ?
+      ORDER BY iml_timestamp_create DESC';
       
 $fieldHistoryStatement = $gDb->queryPrepared($sql, array($dateFromIntern.' 00:00:00', $dateToIntern.' 23:59:59', $getKeyId));
 
@@ -103,7 +103,7 @@ if ($fieldHistoryStatement->rowCount() === 0)
 }
 
 // create html page object
-$page = new HtmlPage('plg-keymanager-keys-history', $headline);
+$page = new HtmlPage('plg-inventory-manager-keys-history', $headline);
 
 // create filter menu with input elements for Startdate and Enddate                                                 //todo !!!!!!!!!!!!!!!!!!!!!!ohne Umweg �ber $form
 $FilterNavbar = new HtmlNavbar('menu_profile_field_history_filter', '', null, 'filter');
@@ -131,21 +131,21 @@ $table->addRowHeadingByArray($columnHeading);
 
 while ($row = $fieldHistoryStatement->fetch())
 {
-    $timestampCreate = DateTime::createFromFormat('Y-m-d H:i:s', $row['kml_timestamp_create']);
+    $timestampCreate = DateTime::createFromFormat('Y-m-d H:i:s', $row['iml_timestamp_create']);
     $columnValues    = array();
-	$columnValues[]  = convlanguagePKM($keys->getPropertyById((int) $row['kml_kmf_id'], 'kmf_name'));
+	$columnValues[]  = convlanguagePIM($keys->getPropertyById((int) $row['iml_imf_id'], 'imf_name'));
 
-    $kmlValueNew = $keys->getHtmlValue($keys->getPropertyById((int) $row['kml_kmf_id'], 'kmf_name_intern'), $row['kml_value_new']);
-    if ($kmlValueNew !== '')
+    $imlValueNew = $keys->getHtmlValue($keys->getPropertyById((int) $row['iml_imf_id'], 'imf_name_intern'), $row['iml_value_new']);
+    if ($imlValueNew !== '')
     {
-    	if ($keys->getPropertyById((int) $row['kml_kmf_id'], 'kmf_name_intern') === 'RECEIVER')
+    	if ($keys->getPropertyById((int) $row['iml_imf_id'], 'imf_name_intern') === 'RECEIVER')
     	{
-    		$user->readDataById((int) $kmlValueNew);
+    		$user->readDataById((int) $imlValueNew);
     		$columnValues[] = '<a href="'.SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_MODULES.'/profile/profile.php', array('user_uuid' => $user->getValue('usr_uuid'))).'">'.$user->getValue('LAST_NAME').', '.$user->getValue('FIRST_NAME').'</a>';
     	}
     	else 
     	{
-    		$columnValues[] = $kmlValueNew;
+    		$columnValues[] = $imlValueNew;
     	}
     }
     else
@@ -153,17 +153,17 @@ while ($row = $fieldHistoryStatement->fetch())
         $columnValues[] = '&nbsp;';
     }
     
-    $kmlValueOld = $keys->getHtmlValue($keys->getPropertyById((int) $row['kml_kmf_id'], 'kmf_name_intern'), $row['kml_value_old']);
-    if ($kmlValueOld !== '')
+    $imlValueOld = $keys->getHtmlValue($keys->getPropertyById((int) $row['iml_imf_id'], 'imf_name_intern'), $row['iml_value_old']);
+    if ($imlValueOld !== '')
    	{
-   	 	if ($keys->getPropertyById((int) $row['kml_kmf_id'], 'kmf_name_intern') === 'RECEIVER')
+   	 	if ($keys->getPropertyById((int) $row['iml_imf_id'], 'imf_name_intern') === 'RECEIVER')
    	 	{
-   	 		$user->readDataById((int) $kmlValueOld);
+   	 		$user->readDataById((int) $imlValueOld);
    	 		$columnValues[] = '<a href="'.SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_MODULES.'/profile/profile.php', array('user_uuid' => $user->getValue('usr_uuid'))).'">'.$user->getValue('LAST_NAME').', '.$user->getValue('FIRST_NAME').'</a>';
    	 	}
    	 	else
    	 	{
-   	 		$columnValues[] = $kmlValueOld;
+   	 		$columnValues[] = $imlValueOld;
    	 	}
     }
     else
@@ -171,7 +171,7 @@ while ($row = $fieldHistoryStatement->fetch())
         $columnValues[] = '&nbsp;';
     }
    
-    $user->readDataById($row['kml_usr_id_create']);
+    $user->readDataById($row['iml_usr_id_create']);
     $columnValues[] = '<a href="'.SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_MODULES.'/profile/profile.php', array('user_uuid' => $user->getValue('usr_uuid'))).'">'.$user->getValue('LAST_NAME').', '.$user->getValue('FIRST_NAME').'</a>';
     $columnValues[] = $timestampCreate->format($gSettingsManager->getString('system_date').' '.$gSettingsManager->getString('system_time'));
     $table->addRowByArray($columnValues);

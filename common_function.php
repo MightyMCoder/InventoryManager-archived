@@ -1,7 +1,7 @@
 <?php
 /**
  ***********************************************************************************************
- * Common functions for the Admidio plugin KeyManager
+ * Common functions for the Admidio plugin InventoryManager
  *
  * @copyright The Admidio Team
  * @see https://www.admidio.org/
@@ -17,21 +17,21 @@ if(!defined('PLUGIN_FOLDER'))
 {
 	define('PLUGIN_FOLDER', '/'.substr(__DIR__,strrpos(__DIR__,DIRECTORY_SEPARATOR)+1));
 }
-if (!defined('TBL_KEYMANAGER_FIELDS'))
+if (!defined('TBL_INVENTORY_MANAGER_FIELDS'))
 {
-	define('TBL_KEYMANAGER_FIELDS',  $g_tbl_praefix . '_keymanager_fields');
+	define('TBL_INVENTORY_MANAGER_FIELDS',  $g_tbl_praefix . '_inventory_manager_fields');
 }
-if (!defined('TBL_KEYMANAGER_DATA'))
+if (!defined('TBL_INVENTORY_MANAGER_DATA'))
 {
-	define('TBL_KEYMANAGER_DATA',    $g_tbl_praefix . '_keymanager_data');
+	define('TBL_INVENTORY_MANAGER_DATA',    $g_tbl_praefix . '_inventory_manager_data');
 }
-if (!defined('TBL_KEYMANAGER_KEYS'))
+if (!defined('TBL_INVENTORY_MANAGER_KEYS'))
 {
-	define('TBL_KEYMANAGER_KEYS',    $g_tbl_praefix . '_keymanager_keys');
+	define('TBL_INVENTORY_MANAGER_KEYS',    $g_tbl_praefix . '_inventory_manager_keys');
 }
-if (!defined('TBL_KEYMANAGER_LOG'))
+if (!defined('TBL_INVENTORY_MANAGER_LOG'))
 {
-	define('TBL_KEYMANAGER_LOG',     $g_tbl_praefix . '_keymanager_log');
+	define('TBL_INVENTORY_MANAGER_LOG',     $g_tbl_praefix . '_inventory_manager_log');
 }
 
 
@@ -57,7 +57,7 @@ function isUserAuthorized($scriptName)
 	
 	if ( $menuStatement->rowCount() === 0 || $menuStatement->rowCount() > 1)
 	{
-		$gMessage->show($GLOBALS['gL10n']->get('PLG_KEYMANAGER_MENU_URL_ERROR', array($scriptName)), $GLOBALS['gL10n']->get('SYS_ERROR'));
+		$gMessage->show($GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_MENU_URL_ERROR', array($scriptName)), $GLOBALS['gL10n']->get('SYS_ERROR'));
 	}
 	else
 	{
@@ -132,7 +132,7 @@ function isUserAuthorizedForPreferences()
  * @param   string  $field_name
  * @return  string  translated $field_name
  */
-function convlanguagePKM($field_name)
+function convlanguagePIM($field_name)
 {
 	return (((substr($field_name,3,1)) == '_') ? $GLOBALS['gL10n']->get($field_name) : $field_name);
 }
@@ -147,7 +147,7 @@ function convlanguagePKM($field_name)
  */
 function getNewNameIntern($name, $index)
 {
-	$name = umlautePKM($name);
+	$name = umlautePIM($name);
 	$newNameIntern = strtoupper(str_replace(' ', '_', $name));
 
 	if ($index > 1)
@@ -155,9 +155,9 @@ function getNewNameIntern($name, $index)
 		$newNameIntern = $newNameIntern . '_' . $index;
 	}
 
-	$sql = 'SELECT kmf_id
-              FROM '.TBL_KEYMANAGER_FIELDS.'
-             WHERE kmf_name_intern = ? ';
+	$sql = 'SELECT imf_id
+              FROM '.TBL_INVENTORY_MANAGER_FIELDS.'
+             WHERE imf_name_intern = ? ';
 	$userFieldsStatement = $GLOBALS['gDb']->queryPrepared($sql, array($newNameIntern));
 
 	if ($userFieldsStatement->rowCount() > 0)
@@ -177,10 +177,10 @@ function getNewNameIntern($name, $index)
  */
 function genNewSequence()
 {
-	$sql =  'SELECT max(kmf_sequence) as max_sequence
-                   FROM '.TBL_KEYMANAGER_FIELDS.' 
-                  WHERE ( kmf_org_id = ?
-                     OR kmf_org_id IS NULL ) ';
+	$sql =  'SELECT max(imf_sequence) as max_sequence
+                   FROM '.TBL_INVENTORY_MANAGER_FIELDS.' 
+                  WHERE ( imf_org_id = ?
+                     OR imf_org_id IS NULL ) ';
 	$statement = $GLOBALS['gDb']->queryPrepared($sql, array($GLOBALS['gCurrentOrgId']));
 	$row = $statement->fetch();
 
@@ -194,7 +194,7 @@ function genNewSequence()
  * @param   string  $tmptext
  * @return  string  $tmptext
  */
-function umlautePKM($tmptext)
+function umlautePIM($tmptext)
 {
 	// Autor: guenter47
 	// angepasst aufgrund eines Fehlers bei der Umsetzung von ß (rmb)

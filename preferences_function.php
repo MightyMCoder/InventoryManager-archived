@@ -1,7 +1,7 @@
 <?php
 /**
  ***********************************************************************************************
- * Verarbeiten der Einstellungen des Admidio-Plugins KeyManager
+ * Verarbeiten der Einstellungen des Admidio-Plugins InventoryManager
  * 
  * @copyright The Admidio Team
  * @see https://www.admidio.org/
@@ -23,7 +23,7 @@ require_once(__DIR__ . '/../../adm_program/system/common.php');
 require_once(__DIR__ . '/common_function.php');
 require_once(__DIR__ . '/classes/configtable.php');
 
-$pPreferences = new ConfigTablePKM();
+$pPreferences = new ConfigTablePIM();
 $pPreferences->read();
 
 // only authorized user are allowed to start this module
@@ -89,21 +89,21 @@ case 1:
 
 case 2:
 	
-	$headline = $gL10n->get('PLG_KEYMANAGER_DEINSTALLATION');
+	$headline = $gL10n->get('PLG_INVENTORY_MANAGER_DEINSTALLATION');
 	 
 	    // create html page object
-    $page = new HtmlPage('plg-keymanager-deinstallation', $headline);
+    $page = new HtmlPage('plg-inventory-manager-deinstallation', $headline);
     
     // add current url to navigation stack
     $gNavigation->addUrl(CURRENT_URL, $headline);
     
-    $page->addHtml('<p class="lead">'.$gL10n->get('PLG_KEYMANAGER_DEINSTALLATION_FORM_DESC').'</p>');
+    $page->addHtml('<p class="lead">'.$gL10n->get('PLG_INVENTORY_MANAGER_DEINSTALLATION_FORM_DESC').'</p>');
 
     // show form
     $form = new HtmlForm('deinstallation_form', SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/preferences_function.php', array('mode' => 3)), $page);
-    $radioButtonEntries = array('0' => $gL10n->get('PLG_KEYMANAGER_DEINST_ACTORGONLY'), '1' => $gL10n->get('PLG_KEYMANAGER_DEINST_ALLORG') );
-    $form->addRadioButton('deinst_org_select',$gL10n->get('PLG_KEYMANAGER_ORG_CHOICE'), $radioButtonEntries, array('defaultValue' => '0')); 
-    $form->addSubmitButton('btn_deinstall', $gL10n->get('PLG_KEYMANAGER_DEINSTALLATION'), array('icon' => 'fa-trash-alt', 'class' => 'offset-sm-3'));
+    $radioButtonEntries = array('0' => $gL10n->get('PLG_INVENTORY_MANAGER_DEINST_ACTORGONLY'), '1' => $gL10n->get('PLG_INVENTORY_MANAGER_DEINST_ALLORG') );
+    $form->addRadioButton('deinst_org_select',$gL10n->get('PLG_INVENTORY_MANAGER_ORG_CHOICE'), $radioButtonEntries, array('defaultValue' => '0')); 
+    $form->addSubmitButton('btn_deinstall', $gL10n->get('PLG_INVENTORY_MANAGER_DEINSTALLATION'), array('icon' => 'fa-trash-alt', 'class' => 'offset-sm-3'));
     
     // add form to html page and show page
     $page->addHtml($form->show(false));
@@ -115,10 +115,10 @@ case 3:
 	$gNavigation->clear();
 	$gMessage->setForwardUrl($gHomepage);		
 
-	$resMes = $gL10n->get('PLG_KEYMANAGER_DEINST_STARTMESSAGE');
+	$resMes = $gL10n->get('PLG_INVENTORY_MANAGER_DEINST_STARTMESSAGE');
 	$resMes .= $pPreferences->deleteKeyData($_POST['deinst_org_select']);
 	$resMes .= $pPreferences->deleteConfigData($_POST['deinst_org_select']);
-	$resMes .= $gL10n->get('PLG_KEYMANAGER_DEINST_ENDMESSAGE');
+	$resMes .= $gL10n->get('PLG_INVENTORY_MANAGER_DEINST_ENDMESSAGE');
 	
 	$gMessage->show($resMes );
    	break;

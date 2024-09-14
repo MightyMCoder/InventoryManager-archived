@@ -28,13 +28,13 @@
  *
  *****************************************************************************/
      	
-class ConfigTablePKM
+class ConfigTablePIM
 {
 	public $config = array();        ///< Array mit allen Konfigurationsdaten
 	public $configpff = array();     ///< Array mit allen Konfigurationsdaten
 
 	protected $table_name;
-	protected static $shortcut = 'PKM';
+	protected static $shortcut = 'PIM';
 	protected static $version;
 	protected static $stand;
 	protected static $dbtoken;
@@ -45,7 +45,7 @@ class ConfigTablePKM
 	public $config_default = array();	
 	
     /**
-     * ConfigTablePKM constructor
+     * ConfigTablePIM constructor
      */
 	public function __construct()
 	{
@@ -174,122 +174,122 @@ class ConfigTablePKM
 		global $gProfileFields;
 	
 		// pruefen, ob es die Tabelle bereits gibt
-		$sql = 'SHOW TABLES LIKE \''.TBL_KEYMANAGER_FIELDS.'\' ';
+		$sql = 'SHOW TABLES LIKE \''.TBL_INVENTORY_MANAGER_FIELDS.'\' ';
 		$statement = $GLOBALS['gDb']->query($sql);
 		
 		// Tabelle anlegen, wenn es sie noch nicht gibt
 		if (!$statement->rowCount())
 		{
-			$sql='CREATE TABLE '.TBL_KEYMANAGER_FIELDS.'
-				(kmf_id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	  			kmf_org_id int(10) unsigned NOT NULL,
-	  			kmf_type varchar(30)  NOT NULL,
-	  			kmf_name  varchar(100)   NOT NULL,
-				kmf_name_intern  varchar(110)   NOT NULL,
-				kmf_sequence int(10) unsigned NOT NULL,
-				kmf_system boolean  NOT NULL DEFAULT \'0\',	
-				kmf_mandatory boolean  NOT NULL DEFAULT \'0\',	
-	  			kmf_description text,
-				kmf_value_list text,
-	  			kmf_usr_id_create int(10) unsigned DEFAULT NULL,
-	  			kmf_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-	  			kmf_usr_id_change int(10) unsigned DEFAULT NULL,
-	  			kmf_timestamp_change timestamp NULL DEFAULT NULL,
-	  			PRIMARY KEY (kmf_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+			$sql='CREATE TABLE '.TBL_INVENTORY_MANAGER_FIELDS.'
+				(imf_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  			imf_org_id int(10) unsigned NOT NULL,
+	  			imf_type varchar(30)  NOT NULL,
+	  			imf_name  varchar(100)   NOT NULL,
+				imf_name_intern  varchar(110)   NOT NULL,
+				imf_sequence int(10) unsigned NOT NULL,
+				imf_system boolean  NOT NULL DEFAULT \'0\',	
+				imf_mandatory boolean  NOT NULL DEFAULT \'0\',	
+	  			imf_description text,
+				imf_value_list text,
+	  			imf_usr_id_create int(10) unsigned DEFAULT NULL,
+	  			imf_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  			imf_usr_id_change int(10) unsigned DEFAULT NULL,
+	  			imf_timestamp_change timestamp NULL DEFAULT NULL,
+	  			PRIMARY KEY (imf_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 			    $GLOBALS['gDb']->query($sql);
 		}
 		
-		$sql = 'SHOW TABLES LIKE \''.TBL_KEYMANAGER_DATA.'\' ';
+		$sql = 'SHOW TABLES LIKE \''.TBL_INVENTORY_MANAGER_DATA.'\' ';
 		$statement = $GLOBALS['gDb']->query($sql);
 		
 		// Tabelle anlegen, wenn es sie noch nicht gibt
 		if (!$statement->rowCount())
 		{
-			$sql='CREATE TABLE '.TBL_KEYMANAGER_DATA.'
-				(kmd_id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	  			 kmd_kmf_id int(10) unsigned  NOT NULL,
-				 kmd_kmk_id int(10) unsigned  NOT NULL,
-	  			 kmd_value varchar(4000),
-	  			 PRIMARY KEY (kmd_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+			$sql='CREATE TABLE '.TBL_INVENTORY_MANAGER_DATA.'
+				(imd_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  			 imd_imf_id int(10) unsigned  NOT NULL,
+				 imd_imk_id int(10) unsigned  NOT NULL,
+	  			 imd_value varchar(4000),
+	  			 PRIMARY KEY (imd_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 			     $GLOBALS['gDb']->query($sql);
 		}
 		
-		$sql = 'SHOW TABLES LIKE \''.TBL_KEYMANAGER_KEYS.'\' ';
+		$sql = 'SHOW TABLES LIKE \''.TBL_INVENTORY_MANAGER_KEYS.'\' ';
 		$statement = $GLOBALS['gDb']->query($sql);
 		
 		// Tabelle anlegen, wenn es sie noch nicht gibt
 		if (!$statement->rowCount())
 		{
-			$sql='CREATE TABLE '.TBL_KEYMANAGER_KEYS.'
-				(kmk_id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	  			kmk_org_id int(10) unsigned NOT NULL,
-				kmk_former boolean DEFAULT 0,	
-				kmk_usr_id_create int(10) unsigned DEFAULT NULL,
-	  			kmk_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-	  			kmk_usr_id_change int(10) unsigned DEFAULT NULL,
-	  			kmk_timestamp_change timestamp NULL DEFAULT NULL,
-	  			PRIMARY KEY (kmk_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+			$sql='CREATE TABLE '.TBL_INVENTORY_MANAGER_KEYS.'
+				(imk_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  			imk_org_id int(10) unsigned NOT NULL,
+				imk_former boolean DEFAULT 0,	
+				imk_usr_id_create int(10) unsigned DEFAULT NULL,
+	  			imk_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  			imk_usr_id_change int(10) unsigned DEFAULT NULL,
+	  			imk_timestamp_change timestamp NULL DEFAULT NULL,
+	  			PRIMARY KEY (imk_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 			    $GLOBALS['gDb']->query($sql);
 		}
 		
-		$sql = 'SHOW TABLES LIKE \''.TBL_KEYMANAGER_LOG.'\' ';
+		$sql = 'SHOW TABLES LIKE \''.TBL_INVENTORY_MANAGER_LOG.'\' ';
 		$statement = $GLOBALS['gDb']->query($sql);
 		
 		// Tabelle anlegen, wenn es sie noch nicht gibt
 		if (!$statement->rowCount())
 		{
-			$sql='CREATE TABLE '.TBL_KEYMANAGER_LOG.'
-				(kml_id int(10) unsigned NOT NULL AUTO_INCREMENT,
-				kml_kmk_id int(10) unsigned NOT NULL,	
-				kml_kmf_id int(10) unsigned NOT NULL,	
-				kml_value_old varchar(4000),	
-				kml_value_new varchar(4000),	
-				kml_usr_id_create int(10) unsigned DEFAULT NULL,
-	  			kml_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,	
-	  			kml_comment varchar(255) NULL,	
-	  			PRIMARY KEY (kml_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+			$sql='CREATE TABLE '.TBL_INVENTORY_MANAGER_LOG.'
+				(iml_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+				iml_imk_id int(10) unsigned NOT NULL,	
+				iml_imf_id int(10) unsigned NOT NULL,	
+				iml_value_old varchar(4000),	
+				iml_value_new varchar(4000),	
+				iml_usr_id_create int(10) unsigned DEFAULT NULL,
+	  			iml_timestamp_create timestamp NULL DEFAULT CURRENT_TIMESTAMP,	
+	  			iml_comment varchar(255) NULL,	
+	  			PRIMARY KEY (iml_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 			    $GLOBALS['gDb']->query($sql);
 		}
 		
 		$sql = 'SELECT *
-            	  FROM '.TBL_KEYMANAGER_FIELDS.'
-            	 WHERE kmf_name_intern = \'KEYNAME\'
-            	   AND kmf_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' ';
+            	  FROM '.TBL_INVENTORY_MANAGER_FIELDS.'
+            	 WHERE imf_name_intern = \'ITEMNAME\'
+            	   AND imf_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' ';
 		$statement = $GLOBALS['gDb']->query($sql);
 		
 		if ($statement->rowCount() == 0)                 
 		{
-			$keyField = new TableAccess($GLOBALS['gDb'], TBL_KEYMANAGER_FIELDS, 'kmf');
-			$keyField->setValue('kmf_org_id', (int) $GLOBALS['gCurrentOrgId']);
-			$keyField->setValue('kmf_sequence', 1);
-			$keyField->setValue('kmf_system', 1);
-			$keyField->setValue('kmf_mandatory', 1);
-			$keyField->setValue('kmf_name', 'PKM_KEYNAME');
-			$keyField->setValue('kmf_name_intern', 'KEYNAME');
-			$keyField->setValue('kmf_type', 'TEXT');
-			$keyField->setValue('kmf_description', 'Der Name des Schlüssels (z.B. Haupteingang)');
+			$keyField = new TableAccess($GLOBALS['gDb'], TBL_INVENTORY_MANAGER_FIELDS, 'imf');
+			$keyField->setValue('imf_org_id', (int) $GLOBALS['gCurrentOrgId']);
+			$keyField->setValue('imf_sequence', 1);
+			$keyField->setValue('imf_system', 1);
+			$keyField->setValue('imf_mandatory', 1);
+			$keyField->setValue('imf_name', 'PIM_ITEMNAME');
+			$keyField->setValue('imf_name_intern', 'ITEMNAME');
+			$keyField->setValue('imf_type', 'TEXT');
+			$keyField->setValue('imf_description', 'Der Name des Gegenstandes (z.B. Kerzen)');
 			$keyField->save();
 		
-			$keyField = new TableAccess($GLOBALS['gDb'], TBL_KEYMANAGER_FIELDS, 'kmf');
-			$keyField->setValue('kmf_org_id', (int) $GLOBALS['gCurrentOrgId']);
-			$keyField->setValue('kmf_sequence', 2);
-			$keyField->setValue('kmf_system', 1);
-			$keyField->setValue('kmf_mandatory', 0);
-			$keyField->setValue('kmf_name', 'PKM_RECEIVER');
-			$keyField->setValue('kmf_name_intern', 'RECEIVER');
-			$keyField->setValue('kmf_type', 'TEXT');
-			$keyField->setValue('kmf_description', 'Der Empfänger des Schlüssels');
+			$keyField = new TableAccess($GLOBALS['gDb'], TBL_INVENTORY_MANAGER_FIELDS, 'imf');
+			$keyField->setValue('imf_org_id', (int) $GLOBALS['gCurrentOrgId']);
+			$keyField->setValue('imf_sequence', 2);
+			$keyField->setValue('imf_system', 1);
+			$keyField->setValue('imf_mandatory', 0);
+			$keyField->setValue('imf_name', 'PIM_RECEIVER');
+			$keyField->setValue('imf_name_intern', 'RECEIVER');
+			$keyField->setValue('imf_type', 'TEXT');
+			$keyField->setValue('imf_description', 'Der Empfänger des Gegenstandes');
 			$keyField->save();
 		
-			$keyField = new TableAccess($GLOBALS['gDb'], TBL_KEYMANAGER_FIELDS, 'kmf');
-			$keyField->setValue('kmf_org_id', (int) $GLOBALS['gCurrentOrgId']);
-			$keyField->setValue('kmf_sequence', 3);
-			$keyField->setValue('kmf_system', 1);
-			$keyField->setValue('kmf_mandatory', 0);
-			$keyField->setValue('kmf_name', 'PKM_RECEIVED_ON');
-			$keyField->setValue('kmf_name_intern', 'RECEIVED_ON');
-			$keyField->setValue('kmf_type', 'DATE');
-			$keyField->setValue('kmf_description', 'Das Empfangsdatum des Schlüssels');
+			$keyField = new TableAccess($GLOBALS['gDb'], TBL_INVENTORY_MANAGER_FIELDS, 'imf');
+			$keyField->setValue('imf_org_id', (int) $GLOBALS['gCurrentOrgId']);
+			$keyField->setValue('imf_sequence', 3);
+			$keyField->setValue('imf_system', 1);
+			$keyField->setValue('imf_mandatory', 0);
+			$keyField->setValue('imf_name', 'PIM_RECEIVED_ON');
+			$keyField->setValue('imf_name_intern', 'RECEIVED_ON');
+			$keyField->setValue('imf_type', 'DATE');
+			$keyField->setValue('imf_description', 'Das Empfangsdatum des Gegenstandes');
 			$keyField->save();
 		}
 
@@ -566,7 +566,7 @@ class ConfigTablePKM
         			  WHERE plp_name LIKE ?
                       '. $sqlWhereCondition ;
 		$result_data = $GLOBALS['gDb']->queryPrepared($sql, array(self::$shortcut.'__%'));	
-		$result .= ($result_data ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN', array($this->table_name)) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN_ERROR', array($this->table_name)));
+		$result .= ($result_data ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN', array($this->table_name)) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN_ERROR', array($this->table_name)));
 		
 		// wenn die Tabelle nur Eintraege dieses Plugins hatte, sollte sie jetzt leer sein und kann geloescht werden
 		$sql = 'SELECT * FROM '.$this->table_name.' ';
@@ -576,11 +576,11 @@ class ConfigTablePKM
     	{
         	$sql = 'DROP TABLE '.$this->table_name.' ';
         	$result_db = $GLOBALS['gDb']->queryPrepared($sql);
-        	$result .= ($result_db ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_TABLE_DELETED', array($this->table_name )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_TABLE_DELETE_ERROR', array($this->table_name)));
+        	$result .= ($result_db ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_TABLE_DELETED', array($this->table_name )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_TABLE_DELETE_ERROR', array($this->table_name)));
         }
         else
         {
-        	$result .= $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_CONFIGTABLE_DELETE_NOTPOSSIBLE', array($this->table_name )) ;
+        	$result .= $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_CONFIGTABLE_DELETE_NOTPOSSIBLE', array($this->table_name )) ;
         }
 		
 		return $result;
@@ -599,60 +599,60 @@ class ConfigTablePKM
 
 		if($deinst_org_select == 0)                   //0 = Daten nur in aktueller Org loeschen
 		{
-			/*$sql = 'DELETE FROM '.TBL_KEYMANAGER_DATA.'
-                          WHERE kmd_kmk_id IN 
-              	        (SELECT kmk_id 
+			/*$sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_DATA.'
+                          WHERE imd_imk_id IN 
+              	        (SELECT imk_id 
 					       FROM ?
-                	      WHERE kmk_org_id = ? )';
+                	      WHERE imk_org_id = ? )';
 	
-			$result_data = $GLOBALS['gDb']->queryPrepared($sql, array(TBL_KEYMANAGER_KEYS, $GLOBALS['gCurrentOrgId']));	*/
+			$result_data = $GLOBALS['gDb']->queryPrepared($sql, array(TBL_INVENTORY_MANAGER_KEYS, $GLOBALS['gCurrentOrgId']));	*/
 		    //queryPrepared doesn´t work Why? Since when?
 		    // This code works:
-		    $sql = 'DELETE FROM '.TBL_KEYMANAGER_DATA.'
-                          WHERE kmd_kmk_id IN
-              	        (SELECT kmk_id
-					       FROM '.TBL_KEYMANAGER_KEYS.'
-                	      WHERE kmk_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' )';
+		    $sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_DATA.'
+                          WHERE imd_imk_id IN
+              	        (SELECT imk_id
+					       FROM '.TBL_INVENTORY_MANAGER_KEYS.'
+                	      WHERE imk_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' )';
 		    $result_data = $GLOBALS['gDb']->query($sql);
 		    
-			$result .= ($result_data ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_keymanager_data' )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_keymanager_data' )));
+			$result .= ($result_data ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_inventory_manager_data' )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_inventory_manager_data' )));
 		
-			/*$sql = 'DELETE FROM '.TBL_KEYMANAGER_LOG.'
-                          WHERE kml_kmk_id IN 
-				        (SELECT kmk_id 
+			/*$sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_LOG.'
+                          WHERE iml_imk_id IN 
+				        (SELECT imk_id 
 					       FROM ?
-                          WHERE kmk_org_id = ? )';
+                          WHERE imk_org_id = ? )';
 
-			$result_log = $GLOBALS['gDb']->queryPrepared($sql, array(TBL_KEYMANAGER_KEYS, $GLOBALS['gCurrentOrgId']));	*/
-			$sql = 'DELETE FROM '.TBL_KEYMANAGER_LOG.'
-                          WHERE kml_kmk_id IN
-				        (SELECT kmk_id
-					       FROM '.TBL_KEYMANAGER_KEYS.'
-                          WHERE kmk_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' )';
+			$result_log = $GLOBALS['gDb']->queryPrepared($sql, array(TBL_INVENTORY_MANAGER_KEYS, $GLOBALS['gCurrentOrgId']));	*/
+			$sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_LOG.'
+                          WHERE iml_imk_id IN
+				        (SELECT imk_id
+					       FROM '.TBL_INVENTORY_MANAGER_KEYS.'
+                          WHERE imk_org_id = \''.$GLOBALS['gCurrentOrgId'].'\' )';
 			
 			$result_log = $GLOBALS['gDb']->query($sql);
 			
-			$result .= ($result_log ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_keymanager_log' )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_keymanager_log')));
+			$result .= ($result_log ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_inventory_manager_log' )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_inventory_manager_log')));
 		
-			$sql = 'DELETE FROM '.TBL_KEYMANAGER_KEYS.'
-	        	          WHERE kmk_org_id = ? ';
+			$sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_KEYS.'
+	        	          WHERE imk_org_id = ? ';
 
 			$result_keys = $GLOBALS['gDb']->queryPrepared($sql, array($GLOBALS['gCurrentOrgId']));
-			$result .= ($result_keys ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_keymanager_keys' )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_keymanager_keys')));
+			$result .= ($result_keys ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_inventory_manager_keys' )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_inventory_manager_keys')));
 		
-			$sql = 'DELETE FROM '.TBL_KEYMANAGER_FIELDS.'
-                          WHERE kmf_org_id = ? ';
+			$sql = 'DELETE FROM '.TBL_INVENTORY_MANAGER_FIELDS.'
+                          WHERE imf_org_id = ? ';
 			
 			$result_fields = $GLOBALS['gDb']->queryPrepared($sql, array($GLOBALS['gCurrentOrgId']));
-			$result .= ($result_fields ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_keymanager_fields' )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_keymanager_fields')));
+			$result .= ($result_fields ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN', array($g_tbl_praefix . '_inventory_manager_fields' )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_DATA_DELETED_IN_ERROR', array($g_tbl_praefix . '_inventory_manager_fields')));
 		}
 		
 		//drop tables keys, data, log and fields 
 		$table_array = array(
-				TBL_KEYMANAGER_FIELDS,
-				TBL_KEYMANAGER_DATA,
-				TBL_KEYMANAGER_KEYS,
-				TBL_KEYMANAGER_LOG );
+				TBL_INVENTORY_MANAGER_FIELDS,
+				TBL_INVENTORY_MANAGER_DATA,
+				TBL_INVENTORY_MANAGER_KEYS,
+				TBL_INVENTORY_MANAGER_LOG );
 	
 		foreach ($table_array as $table_name)
 		{
@@ -667,11 +667,11 @@ class ConfigTablePKM
 			{
 				$sql = 'DROP TABLE '.$table_name.' ';
 				$result_db = $GLOBALS['gDb']->queryPrepared($sql);
-				$result .= ($result_db ? $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_TABLE_DELETED', array($table_name )) : $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_TABLE_DELETE_ERROR', array($table_name)));
+				$result .= ($result_db ? $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_TABLE_DELETED', array($table_name )) : $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_TABLE_DELETE_ERROR', array($table_name)));
 			}
 			else 
 			{
-				$result .= $GLOBALS['gL10n']->get('PLG_KEYMANAGER_DEINST_TABLE_DELETE_NOTPOSSIBLE', array($table_name)) ;
+				$result .= $GLOBALS['gL10n']->get('PLG_INVENTORY_MANAGER_DEINST_TABLE_DELETE_NOTPOSSIBLE', array($table_name)) ;
 			}
 		}
 		

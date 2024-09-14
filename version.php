@@ -1,7 +1,7 @@
 <?php
 /**
  ***********************************************************************************************
- * Version file for the Admidio plugin KeyManager
+ * Version file for the Admidio plugin InventoryManager
  * 
  * @copyright The Admidio Team
  * @see https://www.admidio.org/

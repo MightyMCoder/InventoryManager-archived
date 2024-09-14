@@ -1,13 +1,13 @@
 <?php
 /**
  ***********************************************************************************************
- * KeyManager
+ * InventoryManager
  *
  * Version 2.3.0
  *
- * KeyManager is an Admidio plugin for managing building and room keys.
+ * InventoryManager is an Admidio plugin for managing building and room keys.
  * 
- * Note: KeyManager uses the external class XLSXWriter (https://github.com/mk-j/PHP_XLSXWriter)
+ * Note: InventoryManager uses the external class XLSXWriter (https://github.com/mk-j/PHP_XLSXWriter)
  * 
  * Author: rmb
  *
@@ -40,7 +40,7 @@ require_once(__DIR__ . '/common_function.php');
 require_once(__DIR__ . '/classes/keys.php');
 require_once(__DIR__ . '/classes/configtable.php');
 
-//$scriptName ist der Name wie er im Menue eingetragen werden muss, also ohne evtl. vorgelagerte Ordner wie z.B. /playground/adm_plugins/keymanager...
+//$scriptName ist der Name wie er im Menue eingetragen werden muss, also ohne evtl. vorgelagerte Ordner wie z.B. /playground/adm_plugins/inventory_manager...
 $scriptName = substr($_SERVER['SCRIPT_NAME'], strpos($_SERVER['SCRIPT_NAME'], FOLDER_PLUGINS));
 
 // only authorized user are allowed to start this module
@@ -49,25 +49,25 @@ if (!isUserAuthorized($scriptName))
 	$gMessage->show($gL10n->get('SYS_NO_RIGHTS'));
 }
 
-if (!isset($_SESSION['pKeyManager']['filter_string']))
+if (!isset($_SESSION['pInventoryManager']['filter_string']))
 {
-    $_SESSION['pKeyManager']['filter_string'] = '';
+    $_SESSION['pInventoryManager']['filter_string'] = '';
 }
-if (!isset($_SESSION['pKeyManager']['filter_keyname']))
+if (!isset($_SESSION['pInventoryManager']['filter_keyname']))
 {
-    $_SESSION['pKeyManager']['filter_keyname'] = '';
+    $_SESSION['pInventoryManager']['filter_keyname'] = '';
 }
-if (!isset($_SESSION['pKeyManager']['filter_receiver']))
+if (!isset($_SESSION['pInventoryManager']['filter_receiver']))
 {
-    $_SESSION['pKeyManager']['filter_receiver'] = 0;
+    $_SESSION['pInventoryManager']['filter_receiver'] = 0;
 }
-if (!isset($_SESSION['pKeyManager']['show_all']))
+if (!isset($_SESSION['pInventoryManager']['show_all']))
 {
-    $_SESSION['pKeyManager']['show_all'] = false;
+    $_SESSION['pInventoryManager']['show_all'] = false;
 }
-if (!isset($_SESSION['pKeyManager']['export_and_filter']))
+if (!isset($_SESSION['pInventoryManager']['export_and_filter']))
 {
-    $_SESSION['pKeyManager']['export_and_filter'] = false;
+    $_SESSION['pInventoryManager']['export_and_filter'] = false;
 }
 
 $getMode            = admFuncVariableIsValid($_GET, 'mode',              'string', array('defaultValue' => 'html', 'validValues' => array('csv-ms', 'csv-oo', 'html', 'print', 'pdf', 'pdfl', 'xlsx')));
@@ -80,22 +80,22 @@ $getSameSide        = admFuncVariableIsValid($_GET, 'same_side',         'bool',
 
 if ($getSameSide)
 {
-    $_SESSION['pKeyManager']['filter_string'] = $getFilterString;
-    $_SESSION['pKeyManager']['filter_keyname'] = $getFilterKeyName;
-    $_SESSION['pKeyManager']['filter_receiver'] = $getFilterReceiver;
-    $_SESSION['pKeyManager']['show_all'] = $getShowAll;
-    $_SESSION['pKeyManager']['export_and_filter'] = $getExportAndFilter;
+    $_SESSION['pInventoryManager']['filter_string'] = $getFilterString;
+    $_SESSION['pInventoryManager']['filter_keyname'] = $getFilterKeyName;
+    $_SESSION['pInventoryManager']['filter_receiver'] = $getFilterReceiver;
+    $_SESSION['pInventoryManager']['show_all'] = $getShowAll;
+    $_SESSION['pInventoryManager']['export_and_filter'] = $getExportAndFilter;
 }
 else
 {
-    $getFilterString = $_SESSION['pKeyManager']['filter_string'];
-    $getFilterKeyName = $_SESSION['pKeyManager']['filter_keyname'];
-    $getFilterReceiver = $_SESSION['pKeyManager']['filter_receiver'];
-    $getShowAll = $_SESSION['pKeyManager']['show_all'];
-    $getExportAndFilter = $_SESSION['pKeyManager']['export_and_filter'];
+    $getFilterString = $_SESSION['pInventoryManager']['filter_string'];
+    $getFilterKeyName = $_SESSION['pInventoryManager']['filter_keyname'];
+    $getFilterReceiver = $_SESSION['pInventoryManager']['filter_receiver'];
+    $getShowAll = $_SESSION['pInventoryManager']['show_all'];
+    $getExportAndFilter = $_SESSION['pInventoryManager']['export_and_filter'];
 }
 
-$pPreferences = new ConfigTablePKM();
+$pPreferences = new ConfigTablePIM();
 if ($pPreferences->checkForUpdate())
 {
 	$pPreferences->init();
@@ -111,7 +111,7 @@ $valueQuotes = '';
 $charset     = '';
 $classTable  = '';
 $orientation = '';
-$filename    = umlautePKM($pPreferences->config['Optionen']['file_name']);
+$filename    = umlautePIM($pPreferences->config['Optionen']['file_name']);
 if ($pPreferences->config['Optionen']['add_date'])
 {
     $filename .= '_'.date('Y-m-d');
@@ -172,11 +172,11 @@ $keys->readKeys($gCurrentOrgId);
 $user = new User($gDb, $gProfileFields);
 
 // define title (html) and headline
-$title = $gL10n->get('PLG_KEYMANAGER_KEYMANAGER');
-$headline = $gL10n->get('PLG_KEYMANAGER_KEYMANAGER');
+$title = $gL10n->get('PLG_INVENTORY_MANAGER_INVENTORY_MANAGER');
+$headline = $gL10n->get('PLG_INVENTORY_MANAGER_INVENTORY_MANAGER');
 
 // if html mode and last url was not a list view then save this url to navigation stack
-if ($gNavigation->count() === 0 || ($getMode == 'html' && strpos($gNavigation->getUrl(), 'keymanager.php') === false))             
+if ($gNavigation->count() === 0 || ($getMode == 'html' && strpos($gNavigation->getUrl(), 'inventory_manager.php') === false))             
 {
     $gNavigation->addStartUrl(CURRENT_URL, $headline, 'fa-key');
 }
@@ -189,11 +189,11 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
     if ($getMode == 'print')
     {
         // create html page object without the custom theme files
-        $page = new HtmlPage('plg-keymanager-main-print');
+        $page = new HtmlPage('plg-inventory-manager-main-print');
         $page->setPrintMode();
         $page->setTitle($title);
         $page->setHeadline($headline);
-        $table = new HtmlTable('adm_keys_table', $page, $hoverRows, $datatable, $classTable);
+        $table = new HtmlTable('adm_inventory_table', $page, $hoverRows, $datatable, $classTable);
     }
     elseif ($getMode == 'pdf')
     {
@@ -227,7 +227,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
         $pdf->AddPage();
 
         // Create table object for display
-        $table = new HtmlTable('adm_keys_table', null, $hoverRows, $datatable, $classTable);
+        $table = new HtmlTable('adm_inventory_table', null, $hoverRows, $datatable, $classTable);
         $table->addAttribute('border', '1');
     }
     elseif ($getMode == 'html')
@@ -242,19 +242,19 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
         }
         $hoverRows = true;
 
-        $inputFilterStringLabel = '<i class="fas fa-search" alt="'.$gL10n->get('PLG_KEYMANAGER_GENERAL').'" title="'.$gL10n->get('PLG_KEYMANAGER_GENERAL').'"></i>';
-        $selectBoxKeyNameLabel ='<i class="fas fa-key" alt="'.$gL10n->get('PLG_KEYMANAGER_KEYNAME').'" title="'.$gL10n->get('PLG_KEYMANAGER_KEYNAME').'"></i>';
-        $selectBoxReceiverLabel = '<i class="fas fa-user" alt="'.$gL10n->get('PLG_KEYMANAGER_RECEIVER').'" title="'.$gL10n->get('PLG_KEYMANAGER_RECEIVER').'"></i>';
+        $inputFilterStringLabel = '<i class="fas fa-search" alt="'.$gL10n->get('PLG_INVENTORY_MANAGER_GENERAL').'" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_GENERAL').'"></i>';
+        $selectBoxKeyNameLabel ='<i class="fas fa-key" alt="'.$gL10n->get('PLG_INVENTORY_MANAGER_ITEMNAME').'" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_ITEMNAME').'"></i>';
+        $selectBoxReceiverLabel = '<i class="fas fa-user" alt="'.$gL10n->get('PLG_INVENTORY_MANAGER_RECEIVER').'" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_RECEIVER').'"></i>';
         
         // create html page object
-        $page = new HtmlPage('plg-keymanager-main-html');
+        $page = new HtmlPage('plg-inventory-manager-main-html');
         $page->setTitle($title);
         $page->setHeadline($headline);
 
         $page->addJavascript('
             $("#filter_keyname").change(function () {
               
-                    self.location.href = "'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                    self.location.href = "'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                         'mode'              => 'html',
                         'filter_string'     => $getFilterString,
                         'filter_receiver'   => $getFilterReceiver,
@@ -266,7 +266,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
             });
             $("#filter_receiver").change(function () {
            
-                    self.location.href = "'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                    self.location.href = "'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                         'mode'              => 'html',
                         'filter_string'     => $getFilterString,
                         'filter_keyname'    => $getFilterKeyName,
@@ -277,7 +277,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
        
             });
             $("#menu_item_lists_print_view").click(function() {
-                window.open("'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                window.open("'.SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString, 
                     'filter_keyname'    => $getFilterKeyName, 
                     'filter_receiver'   => $getFilterReceiver,
@@ -307,7 +307,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
         
             $page->addPageFunctionsMenuItem('menu_item_lists_export', $gL10n->get('SYS_EXPORT_TO'), '#', 'fa-file-download');
             $page->addPageFunctionsMenuItem('menu_item_lists_xlsx', $gL10n->get('SYS_MICROSOFT_EXCEL').' (XLSX)',
-                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString,
                     'filter_keyname'    => $getFilterKeyName,
                     'filter_receiver'   => $getFilterReceiver,
@@ -316,7 +316,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
                     'mode'              => 'xlsx')),
                 'fa-file-excel', 'menu_item_lists_export');
             $page->addPageFunctionsMenuItem('menu_item_lists_csv_ms', $gL10n->get('SYS_MICROSOFT_EXCEL').' (CSV)',
-                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString,
                     'filter_keyname'    => $getFilterKeyName,
                     'filter_receiver'   => $getFilterReceiver,
@@ -325,7 +325,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
                     'mode'              => 'csv-ms')),
                 'fa-file-excel', 'menu_item_lists_export');
             $page->addPageFunctionsMenuItem('menu_item_lists_pdf', $gL10n->get('SYS_PDF').' ('.$gL10n->get('SYS_PORTRAIT').')',
-                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString,
                     'filter_keyname'    => $getFilterKeyName,
                     'filter_receiver'   => $getFilterReceiver,
@@ -334,7 +334,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
                     'mode'              => 'pdf')),
                 'fa-file-pdf', 'menu_item_lists_export');
             $page->addPageFunctionsMenuItem('menu_item_lists_pdfl', $gL10n->get('SYS_PDF').' ('.$gL10n->get('SYS_LANDSCAPE').')',
-                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString,
                     'filter_keyname'    => $getFilterKeyName,
                     'filter_receiver'   => $getFilterReceiver,
@@ -343,7 +343,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
                     'mode'              => 'pdfl')),
                 'fa-file-pdf', 'menu_item_lists_export');
             $page->addPageFunctionsMenuItem('menu_item_lists_csv', $gL10n->get('SYS_CSV').' ('.$gL10n->get('SYS_UTF8').')',
-                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array(
+                SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array(
                     'filter_string'     => $getFilterString,
                     'filter_keyname'    => $getFilterKeyName,
                     'filter_receiver'   => $getFilterReceiver,
@@ -356,39 +356,42 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
         if (isUserAuthorizedForPreferences())
 		{
     		$page->addPageFunctionsMenuItem('menu_preferences', $gL10n->get('SYS_SETTINGS'), SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/preferences.php'),  'fa-cog');
-		} 
+            $page->addPageFunctionsMenuItem('keycreate_form_btn', $gL10n->get('PLG_INVENTORY_MANAGER_KEY_CREATE'), SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keys_edit_new.php', array('key_id' => 0)), 'fas fa-plus-circle');
+        } 
         
-		$form = new HtmlForm('navbar_birthdaylist_form', SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/keymanager.php', array('headline' => $headline)), $page, array('type' => 'navbar', 'setFocus' => false));
+        // create filter menu with elements for role
+        $filterNavbar = new HtmlNavbar('navbar_filter', '', null, 'filter');
+		$form = new HtmlForm('navbar_birthdaylist_form', SecurityUtils::encodeUrl(ADMIDIO_URL.FOLDER_PLUGINS . PLUGIN_FOLDER .'/inventory_manager.php', array('headline' => $headline)), $page, array('type' => 'navbar', 'setFocus' => false));
         
 		if ($getExportAndFilter)
 		{  
             $form->addInput('filter_string', $inputFilterStringLabel, $getFilterString);
         
             // read all keynames
-            $sql = 'SELECT DISTINCT kmd_value, kmd_value
-                               FROM '.TBL_KEYMANAGER_DATA.'
-                         INNER JOIN '.TBL_KEYMANAGER_FIELDS.'
-                                 ON kmf_id = kmd_kmf_id
-                              WHERE (  kmf_org_id  = '. $gCurrentOrgId .'
-                                 OR kmf_org_id IS NULL ) 
-                                AND kmf_name_intern = \'KEYNAME\' 
-                           ORDER BY kmd_value ASC';
+            $sql = 'SELECT DISTINCT imd_value, imd_value
+                               FROM '.TBL_INVENTORY_MANAGER_DATA.'
+                         INNER JOIN '.TBL_INVENTORY_MANAGER_FIELDS.'
+                                 ON imf_id = imd_imf_id
+                              WHERE (  imf_org_id  = '. $gCurrentOrgId .'
+                                 OR imf_org_id IS NULL ) 
+                                AND imf_name_intern = \'ITEMNAME\' 
+                           ORDER BY imd_value ASC';
             $form->addSelectBoxFromSql('filter_keyname', $selectBoxKeyNameLabel, $gDb, $sql, array('defaultValue' => $getFilterKeyName , 'showContextDependentFirstEntry' => true));
         
             // read all receiver
-            $sql = 'SELECT DISTINCT kmd_value, CONCAT_WS(\', \', last_name.usd_value, first_name.usd_value)
-                               FROM '.TBL_KEYMANAGER_DATA.'
-                         INNER JOIN '.TBL_KEYMANAGER_FIELDS.'
-                                 ON kmf_id = kmd_kmf_id
+            $sql = 'SELECT DISTINCT imd_value, CONCAT_WS(\', \', last_name.usd_value, first_name.usd_value)
+                               FROM '.TBL_INVENTORY_MANAGER_DATA.'
+                         INNER JOIN '.TBL_INVENTORY_MANAGER_FIELDS.'
+                                 ON imf_id = imd_imf_id
                           LEFT JOIN '. TBL_USER_DATA. ' as last_name
-                                 ON last_name.usd_usr_id = kmd_value
+                                 ON last_name.usd_usr_id = imd_value
                                 AND last_name.usd_usf_id = '. $gProfileFields->getProperty('LAST_NAME', 'usf_id'). '
                           LEFT JOIN '. TBL_USER_DATA. ' as first_name
-                                 ON first_name.usd_usr_id = kmd_value
+                                 ON first_name.usd_usr_id = imd_value
                                 AND first_name.usd_usf_id = '. $gProfileFields->getProperty('FIRST_NAME', 'usf_id'). '
-                              WHERE ( kmf_org_id  = '. $gCurrentOrgId .'
-                                 OR kmf_org_id IS NULL )
-                                AND kmf_name_intern = \'RECEIVER\'
+                              WHERE ( imf_org_id  = '. $gCurrentOrgId .'
+                                 OR imf_org_id IS NULL )
+                                AND imf_name_intern = \'RECEIVER\'
                            ORDER BY CONCAT_WS(\', \', last_name.usd_value, first_name.usd_value) ASC';
             $form->addSelectBoxFromSql('filter_receiver',$selectBoxReceiverLabel, $gDb, $sql, array('defaultValue' => $getFilterReceiver , 'showContextDependentFirstEntry' => true));
         }
@@ -399,13 +402,14 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
             $form->addInput('filter_receiver', '', $getFilterReceiver, array('property' => HtmlForm::FIELD_HIDDEN));          
         }
  
-        $form->addCheckbox('show_all', $gL10n->get('PLG_KEYMANAGER_SHOW_ALL_KEYS'), $getShowAll);                           
-        $form->addCheckbox('export_and_filter', $gL10n->get('PLG_KEYMANAGER_EXPORT_AND_FILTER'), $getExportAndFilter);
+        $form->addCheckbox('show_all', $gL10n->get('PLG_INVENTORY_MANAGER_SHOW_ALL_KEYS'), $getShowAll);                           
+        $form->addCheckbox('export_and_filter', $gL10n->get('PLG_INVENTORY_MANAGER_EXPORT_AND_FILTER'), $getExportAndFilter);
         $form->addInput('same_side', '', '1', array('property' => HtmlForm::FIELD_HIDDEN));
-        
-        $page->addHtml($form->show());        
+        $filterNavbar->addForm($form->show());
+       
+        $page->addHtml($filterNavbar->show());        
 
-        $table = new HtmlTable('adm_keys_table', $page, $hoverRows, $datatable, $classTable);
+        $table = new HtmlTable('adm_inventory_table', $page, $hoverRows, $datatable, $classTable);
         if ($datatable)
         {
             // ab Admidio 4.3 verursacht setDatatablesRowsPerPage, wenn $datatable "false" ist, folgenden Fehler:
@@ -415,7 +419,7 @@ if ($getMode != 'csv' && $getMode != 'xlsx' )
     }
     else
     {
-        $table = new HtmlTable('adm_keys_table', $page, $hoverRows, $datatable, $classTable);
+        $table = new HtmlTable('adm_inventory_table', $page, $hoverRows, $datatable, $classTable);
     }
 }
 
@@ -436,18 +440,18 @@ $columnNumber = 1;
 
 foreach ($keys->mKeyFields as $keyField)
 {
-    $kmfNameIntern = $keyField->getValue('kmf_name_intern');
+    $imfNameIntern = $keyField->getValue('imf_name_intern');
   
-    $columnHeader = convlanguagePKM($keys->getProperty($kmfNameIntern, 'kmf_name'));
+    $columnHeader = convlanguagePIM($keys->getProperty($imfNameIntern, 'imf_name'));
 
-    if ($keys->getProperty($kmfNameIntern, 'kmf_type') == 'CHECKBOX'
-        ||  $keys->getProperty($kmfNameIntern, 'kmf_type') == 'RADIO_BUTTON'
-        ||  $keys->getProperty($kmfNameIntern, 'kmf_type') == 'GENDER')
+    if ($keys->getProperty($imfNameIntern, 'imf_type') == 'CHECKBOX'
+        ||  $keys->getProperty($imfNameIntern, 'imf_type') == 'RADIO_BUTTON'
+        ||  $keys->getProperty($imfNameIntern, 'imf_type') == 'GENDER')
     {
         $columnAlign[] = 'center';
     }
-    elseif ($keys->getProperty($kmfNameIntern, 'kmf_type') == 'NUMBER'
-       ||   $keys->getProperty($kmfNameIntern, 'kmf_type') == 'DECIMAL')
+    elseif ($keys->getProperty($imfNameIntern, 'imf_type') == 'NUMBER'
+       ||   $keys->getProperty($imfNameIntern, 'imf_type') == 'DECIMAL')
     {
         $columnAlign[] = 'right';
     }
@@ -544,26 +548,26 @@ foreach ($keys->keys as $key)
 {
 	$tmp_csv = '';
 	
-	$keys->readKeyData($key['kmk_id'], $gCurrentOrgId);
+	$keys->readKeyData($key['imk_id'], $gCurrentOrgId);
 
     $columnValues = array();
     $content = '';
     $htmlValue = '';
-    $kmfNameIntern = '';
+    $imfNameIntern = '';
     $columnNumber = 1;
     $strikethrough = false;
-    if ($key['kmk_former'])
+    if ($key['imk_former'])
     {
         $strikethrough = true;
     }
 
     foreach($keys->mKeyFields as $keyField)
     {
-        $kmfNameIntern = $keyField->getValue('kmf_name_intern');
+        $imfNameIntern = $keyField->getValue('imf_name_intern');
         
         if ($getExportAndFilter 
-            && (($getFilterKeyName <> '' && $kmfNameIntern == 'KEYNAME' && $getFilterKeyName !=  $keys->getValue($kmfNameIntern, 'database'))
-        	   || ($getFilterReceiver <> 0 && $kmfNameIntern == 'RECEIVER' && $getFilterReceiver !=  $keys->getValue($kmfNameIntern))))
+            && (($getFilterKeyName <> '' && $imfNameIntern == 'ITEMNAME' && $getFilterKeyName !=  $keys->getValue($imfNameIntern, 'database'))
+        	   || ($getFilterReceiver <> 0 && $imfNameIntern == 'RECEIVER' && $getFilterReceiver !=  $keys->getValue($imfNameIntern))))
         {
         	continue 2;
         }
@@ -582,9 +586,9 @@ foreach ($keys->keys as $key)
             }
         }
         
-   		$content = $keys->getValue($kmfNameIntern, 'database');
+   		$content = $keys->getValue($imfNameIntern, 'database');
    			
-		if ($kmfNameIntern == 'RECEIVER' && strlen($content) > 0)
+		if ($imfNameIntern == 'RECEIVER' && strlen($content) > 0)
         {
         	$user->readDataById($content);
           	if ($getMode == 'html')
@@ -597,12 +601,12 @@ foreach ($keys->keys as $key)
           	}
         }
           
-		if ($kmfNameIntern == 'KEYNAME' && $getMode == 'html')
+		if ($imfNameIntern == 'ITEMNAME' && $getMode == 'html')
         {
-          	$content = '<a href="'.SecurityUtils::encodeUrl(ADMIDIO_URL. FOLDER_PLUGINS . PLUGIN_FOLDER .'/keys_edit_new.php', array('key_id' => $key['kmk_id'])).'">'.$content.'</a>';
+          	$content = '<a href="'.SecurityUtils::encodeUrl(ADMIDIO_URL. FOLDER_PLUGINS . PLUGIN_FOLDER .'/keys_edit_new.php', array('key_id' => $key['imk_id'])).'">'.$content.'</a>';
         }
           
-        if ($keys->getProperty($kmfNameIntern, 'kmf_type') == 'CHECKBOX')
+        if ($keys->getProperty($imfNameIntern, 'imf_type') == 'CHECKBOX')
         {
         	if ($content != 1)
             {
@@ -622,24 +626,24 @@ foreach ($keys->keys as $key)
             }
             else 
             {
-            	$content = $keys->getHtmlValue($kmfNameIntern, $content);
+            	$content = $keys->getHtmlValue($imfNameIntern, $content);
             }
         }
-        elseif ($keys->getProperty($kmfNameIntern, 'kmf_type') == 'DATE')
+        elseif ($keys->getProperty($imfNameIntern, 'imf_type') == 'DATE')
         {
-            $content = $keys->getHtmlValue($kmfNameIntern, $content);
+            $content = $keys->getHtmlValue($imfNameIntern, $content);
         }
-        elseif ($keys->getProperty($kmfNameIntern, 'kmf_type') == 'DROPDOWN'
-             || $keys->getProperty($kmfNameIntern, 'kmf_type') == 'RADIO_BUTTON')
+        elseif ($keys->getProperty($imfNameIntern, 'imf_type') == 'DROPDOWN'
+             || $keys->getProperty($imfNameIntern, 'imf_type') == 'RADIO_BUTTON')
         {
         	if ($getMode == 'csv')
             {
-            	$arrListValues = $keys->getProperty($kmfNameIntern, 'kmf_value_list', 'text');
+            	$arrListValues = $keys->getProperty($imfNameIntern, 'imf_value_list', 'text');
             	$content = $arrListValues[$content];
             }
             else
             {
-            	$content = $keys->getHtmlValue($kmfNameIntern, $content);
+            	$content = $keys->getHtmlValue($imfNameIntern, $content);
             }
         }
 
@@ -651,7 +655,7 @@ foreach ($keys->keys as $key)
         // create output in html layout
         else
         {
-        	if (!$key['kmk_former'] || $getMode == 'xlsx')
+        	if (!$key['imk_former'] || $getMode == 'xlsx')
             {
             	$columnValues[] = $content;
             }
@@ -669,14 +673,14 @@ foreach ($keys->keys as $key)
     	
     	if ($pPreferences->isPffInst())
     	{
-    		$tempValue .= '<a class="admidio-icon-link" href="'. SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS .'/'.PLUGIN_FOLDER.'/keys_export_to_pff.php', array('key_id' => $key['kmk_id'])). '">
-    	                       <i class="fas fa-print" title="'.$gL10n->get('PLG_KEYMANAGER_KEY_PRINT').'"></i>
+    		$tempValue .= '<a class="admidio-icon-link" href="'. SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS .'/'.PLUGIN_FOLDER.'/keys_export_to_pff.php', array('key_id' => $key['imk_id'])). '">
+    	                       <i class="fas fa-print" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_KEY_PRINT').'"></i>
     	                   </a>';
     	}
     	if (isUserAuthorizedForPreferences())
     	{
-    		$tempValue .= '<a class="admidio-icon-link" href="'. SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS .'/'.PLUGIN_FOLDER.'/keys_delete.php', array('key_id' => $key['kmk_id'], 'key_former' => $key['kmk_former'])). '">
-    	                       <i class="fas fa-minus-circle" title="'.$gL10n->get('PLG_KEYMANAGER_KEY_DELETE').'"></i>
+    		$tempValue .= '<a class="admidio-icon-link" href="'. SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS .'/'.PLUGIN_FOLDER.'/keys_delete.php', array('key_id' => $key['imk_id'], 'key_former' => $key['imk_former'])). '">
+    	                       <i class="fas fa-minus-circle" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_KEY_DELETE').'"></i>
     	                   </a>';
     	}
     	
@@ -807,10 +811,10 @@ elseif ($getMode == 'xlsx')
     $writer = new XLSXWriter();
     $writer->setAuthor($gCurrentUser->getValue('FIRST_NAME').' '.$gCurrentUser->getValue('LAST_NAME'));
     $writer->setTitle($filename);
-    $writer->setSubject($gL10n->get('PLG_KEYMANAGER_KEYLIST'));
+    $writer->setSubject($gL10n->get('PLG_INVENTORY_MANAGER_KEYLIST'));
     $writer->setCompany($gCurrentOrganization->getValue('org_longname'));
-    $writer->setKeywords(array($gL10n->get('PLG_KEYMANAGER_NAME_OF_PLUGIN'), $gL10n->get('PLG_KEYMANAGER_KEY')));
-    $writer->setDescription($gL10n->get('PLG_KEYMANAGER_CREATED_WITH'));
+    $writer->setKeywords(array($gL10n->get('PLG_INVENTORY_MANAGER_NAME_OF_PLUGIN'), $gL10n->get('PLG_INVENTORY_MANAGER_KEY')));
+    $writer->setDescription($gL10n->get('PLG_INVENTORY_MANAGER_CREATED_WITH'));
     
     $writer->writeSheetHeader('Sheet1', $header );
     for ($i = 0; $i < count($rows); $i++)

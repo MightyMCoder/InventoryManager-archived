@@ -26,7 +26,7 @@ require_once(__DIR__ . '/classes/configtable.php');
 // Initialize and check the parameters
 $getMode = admFuncVariableIsValid($_GET, 'mode', 'string', array('defaultValue' => 'preview', 'validValues' => array('preview', 'write', 'print')));
 
-$pPreferences = new ConfigTablePKM();
+$pPreferences = new ConfigTablePIM();
 $pPreferences->read();
 
 // only authorized user are allowed to start this module
@@ -43,7 +43,7 @@ $icon['not_member'] = array('image' => 'fa-user-slash', 'text' => $gL10n->get('S
 $icon['error'] = array('image' => 'fa-times', 'text' => $gL10n->get('SYS_ERROR'));
 
 // set headline of the script
-$headline = $gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE');
+$headline = $gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE');
 
 if (!StringUtils::strContains($gNavigation->getUrl(), 'synchronize.php'))
 {
@@ -51,7 +51,7 @@ if (!StringUtils::strContains($gNavigation->getUrl(), 'synchronize.php'))
 }
 
 // create html page object
-$page = new HtmlPage('plg-keymanager-synchronize', $headline);
+$page = new HtmlPage('plg-inventory-manager-synchronize', $headline);
 
 if ($getMode == 'preview')     //Default
 {
@@ -92,34 +92,34 @@ if ($getMode == 'preview')     //Default
 		
 		if ($user->isAdministrator() || $gCurrentUser->getValue('usr_id') == $row['usr_id'])
 		{
-			$members[$row['usr_id']]['info'] = $gL10n->get('PLG_KEYMANAGER_SPECIAL_CASE_CURUSER_OR_ADMIN');
+			$members[$row['usr_id']]['info'] = $gL10n->get('PLG_INVENTORY_MANAGER_SPECIAL_CASE_CURUSER_OR_ADMIN');
 			$members[$row['usr_id']]['delete_marker'] = false;
 		}
 	}
 	
 	// read in all receiver
-	$sql = 'SELECT kmd_value, last_name.usd_value as last_name , first_name.usd_value as first_name
-              FROM '.TBL_KEYMANAGER_DATA.'
-        INNER JOIN '.TBL_KEYMANAGER_FIELDS.'
-                ON kmf_id = kmd_kmf_id
+	$sql = 'SELECT imd_value, last_name.usd_value as last_name , first_name.usd_value as first_name
+              FROM '.TBL_INVENTORY_MANAGER_DATA.'
+        INNER JOIN '.TBL_INVENTORY_MANAGER_FIELDS.'
+                ON imf_id = imd_imf_id
          LEFT JOIN '. TBL_USER_DATA. ' as last_name
-                ON last_name.usd_usr_id = kmd_value
+                ON last_name.usd_usr_id = imd_value
                AND last_name.usd_usf_id = ? -- $gProfileFields->getProperty(\'LAST_NAME\', \'usf_id\')
          LEFT JOIN '. TBL_USER_DATA. ' as first_name
-                ON first_name.usd_usr_id = kmd_value
+                ON first_name.usd_usr_id = imd_value
                AND first_name.usd_usf_id = ? -- $gProfileFields->getProperty(\'FIRST_NAME\', \'usf_id\')
-             WHERE kmf_name_intern = \'RECEIVER\'
-               AND ( kmf_org_id = ? -- $gCurrentOrgId
-              	OR kmf_org_id IS NULL )
+             WHERE imf_name_intern = \'RECEIVER\'
+               AND ( imf_org_id = ? -- $gCurrentOrgId
+              	OR imf_org_id IS NULL )
           ORDER BY last_name.usd_value, first_name.usd_value ASC';
 	
 	$receiverStatement =  $gDb->queryPrepared($sql, array($gProfileFields->getProperty('LAST_NAME', 'usf_id'), $gProfileFields->getProperty('FIRST_NAME', 'usf_id'), $gCurrentOrgId));
 	
 	while ($row = $receiverStatement->fetch())
 	{
-		$members[$row['kmd_value']]['info'] = '';
-		$members[$row['kmd_value']]['delete_marker'] = false;
-		$members[$row['kmd_value']]['count']++;
+		$members[$row['imd_value']]['info'] = '';
+		$members[$row['imd_value']]['delete_marker'] = false;
+		$members[$row['imd_value']]['count']++;
 	} 
 	
 	$form = new HtmlForm('synchronize_preview_form', SecurityUtils::encodeUrl(ADMIDIO_URL . FOLDER_PLUGINS . PLUGIN_FOLDER .'/synchronize.php', array('mode' => 'write')), $page);
@@ -127,7 +127,7 @@ if ($getMode == 'preview')     //Default
 	if (sizeof($members) > 0)
 	{
 		// save members in session (for mode write and mode print)
-		$_SESSION['pKeyManager']['synchronize'] = $members;
+		$_SESSION['pInventoryManager']['synchronize'] = $members;
 		
 		$datatable = true;
 		$hoverRows = true;
@@ -136,7 +136,7 @@ if ($getMode == 'preview')     //Default
 		$table->setColumnAlignByArray(array('left', 'center', 'center'));
 		$columnValues = array();
 		$columnValues[] = $gL10n->get('SYS_NAME');
-        $columnValues[] = '<i class="fas fa-key" data-toggle="tooltip" title="'.$gL10n->get('PLG_KEYMANAGER_NUMBER_OF_KEYS').'"></i>';
+        $columnValues[] = '<i class="fas fa-key" data-toggle="tooltip" title="'.$gL10n->get('PLG_INVENTORY_MANAGER_NUMBER_OF_KEYS').'"></i>';
 		$columnValues[] = '<i class="fas fa-info-circle" data-toggle="tooltip" title="'.$gL10n->get('SYS_INFORMATIONS').'"></i>';
 		$table->addRowHeadingByArray($columnValues);
 		
@@ -157,14 +157,14 @@ if ($getMode == 'preview')     //Default
 		{
             $form->addSubmitButton('btn_next_page', $gL10n->get('SYS_SAVE'), array('icon' => 'fa-check', 'class' => ' btn-primary'));
 		}
-		$form->addDescription('<br/>'.$gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE_PREVIEW'));
+		$form->addDescription('<br/>'.$gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE_PREVIEW'));
 		
 		//seltsamerweise wird in diesem Abschnitt nichts angezeigt wenn diese Anweisung fehlt
 		$form->addStaticControl('', '', '');
 	}
 	else
 	{
-		$form->addDescription($gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE_NO_ASSIGN'));
+		$form->addDescription($gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE_NO_ASSIGN'));
 		
 		//seltsamerweise wird in diesem Abschnitt nichts angezeigt wenn diese Anweisung fehlt
 		$form->addStaticControl('', '', '');
@@ -196,7 +196,7 @@ elseif ($getMode == 'write')
 	$member = new TableMembers($gDb);
 	$errorMessage = '';
 	
-	foreach ($_SESSION['pKeyManager']['synchronize'] as $memberId => $data)
+	foreach ($_SESSION['pInventoryManager']['synchronize'] as $memberId => $data)
 	{
 		if ($data['delete_marker'] == true)
 		{
@@ -241,7 +241,7 @@ elseif ($getMode == 'write')
 			{
 			    $columnValues[] = '<i class="fas '.$icon['error']['image'].'" data-toggle="tooltip" title="'.$icon['error']['text'].'"></i>';
 			    $errorMessage .= '<br/>-'.$data['last_name'].', '.$data['first_name'];
-			    $_SESSION['pKeyManager']['synchronize'][$memberId]['delete_marker'] = false;
+			    $_SESSION['pInventoryManager']['synchronize'][$memberId]['delete_marker'] = false;
 			}
 			
 			$table->addRowByArray($columnValues);
@@ -249,10 +249,10 @@ elseif ($getMode == 'write')
 	}
 	
 	$page->addHtml($table->show(false));
-	$form->addDescription('<strong>'.$gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE_SAVED').'</strong>');
+	$form->addDescription('<strong>'.$gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE_SAVED').'</strong>');
 	if ($errorMessage != '')
 	{
-	    $form->addDescription($gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE_ERROR', array('<i class="fas '.$icon['error']['image'].'" ></i>')).$errorMessage);
+	    $form->addDescription($gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE_ERROR', array('<i class="fas '.$icon['error']['image'].'" ></i>')).$errorMessage);
 	}
 	
 	//seltsamerweise wird in diesem Abschnitt nichts angezeigt wenn diese Anweisung fehlt
@@ -269,13 +269,13 @@ elseif ($getMode == 'print')
 	$datatable = false;
 	$classTable  = 'table table-condensed table-striped';
 	$page->setPrintMode();
-	$page->setHeadline($gL10n->get('PLG_KEYMANAGER_SYNCHRONIZE'));
+	$page->setHeadline($gL10n->get('PLG_INVENTORY_MANAGER_SYNCHRONIZE'));
 	$table = new HtmlTable('table_print_synchronize', $page, $hoverRows, $datatable, $classTable);
 	$table->setColumnAlignByArray(array('left', 'center'));
 	$columnValues = array($gL10n->get('SYS_NAME'),  '<i class="fas fa-info-circle" data-toggle="tooltip" title="'.$gL10n->get('SYS_INFORMATIONS').'"></i>');
 	$table->addRowHeadingByArray($columnValues);
 	
-	foreach ($_SESSION['pKeyManager']['synchronize'] as $member => $data)
+	foreach ($_SESSION['pInventoryManager']['synchronize'] as $member => $data)
 	{
 		if ($data['delete_marker'] == true)
 		{

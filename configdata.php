@@ -1,7 +1,7 @@
 <?php
 /**
  ***********************************************************************************************
- * Config data for the Admidio plugin KeyManager
+ * Config data for the Admidio plugin InventoryManager
  *
  * @copyright The Admidio Team
  * @see https://www.admidio.org/
@@ -14,7 +14,7 @@ global $gProfileFields;
 //Standardwerte einer Neuinstallation oder beim Anfuegen einer zusaetzlichen Konfiguration
 $config_default['Optionen']['interface_pff'] = 0;
 $config_default['Optionen']['profile_addin'] = '';
-$config_default['Optionen']['file_name'] = 'KeyManager';
+$config_default['Optionen']['file_name'] = 'InventoryManager';
 $config_default['Optionen']['add_date'] = 0;
 															
 $config_default['Plugininformationen']['version'] = '';

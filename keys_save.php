@@ -33,16 +33,16 @@ $keys = new Keys($gDb, $gCurrentOrgId);
 $startIdx = 1;
 if ($postCopyField > 0)												// a field for a current number was selected	
 {
-	if (isset($_POST['kmf-'. $postCopyField]))
+	if (isset($_POST['imf-'. $postCopyField]))
 	{
-		$startIdx = (int) $_POST['kmf-'. $postCopyField] +1;
+		$startIdx = (int) $_POST['imf-'. $postCopyField] +1;
 	}
 }
 $stopIdx = $startIdx + $postCopyNumber;
 
 for ($i = $startIdx; $i < $stopIdx; ++$i)
 {
-	$_POST['kmf-'. $postCopyField] = $i;
+	$_POST['imf-'. $postCopyField] = $i;
 
 	$keys->readKeyData($getKeyId, $gCurrentOrgId);
 	
@@ -54,18 +54,18 @@ for ($i = $startIdx; $i < $stopIdx; ++$i)
 	// check all key fields
 	foreach ($keys->mKeyFields as $keyField)
 	{
-    	$postId = 'kmf-'. $keyField->getValue('kmf_id');
+    	$postId = 'imf-'. $keyField->getValue('imf_id');
 
     	if (isset($_POST[$postId]))
    	 	{
-        	if ((strlen($_POST[$postId]) === 0 && $keyField->getValue('kmf_mandatory') == 1))
+        	if ((strlen($_POST[$postId]) === 0 && $keyField->getValue('imf_mandatory') == 1))
         	{
-            	$gMessage->show($gL10n->get('SYS_FIELD_EMPTY', array(convlanguagePKM($keyField->getValue('kmf_name')))));
+            	$gMessage->show($gL10n->get('SYS_FIELD_EMPTY', array(convlanguagePIM($keyField->getValue('imf_name')))));
             	// => EXIT
         	}
 
         	// Wert aus Feld in das Key-Klassenobjekt schreiben
-        	$returnCode = $keys->setValue($keyField->getValue('kmf_name_intern'), $_POST[$postId]);
+        	$returnCode = $keys->setValue($keyField->getValue('imf_name_intern'), $_POST[$postId]);
 
         	// Fehlermeldung
         	if (!$returnCode)
@@ -77,9 +77,9 @@ for ($i = $startIdx; $i < $stopIdx; ++$i)
     	else
     	{
         	// Checkboxen uebergeben bei 0 keinen Wert, deshalb diesen hier setzen
-        	if ($keyField->getValue('kmf_type') === 'CHECKBOX')
+        	if ($keyField->getValue('imf_type') === 'CHECKBOX')
         	{
-            	$keys->setValue($keyField->getValue('kmf_name_intern'), '0');
+            	$keys->setValue($keyField->getValue('imf_name_intern'), '0');
         	}
     	}
 	}

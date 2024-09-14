@@ -76,9 +76,9 @@ class Keys
     
 
     /**
-     * returns for a fieldname intern (kmf_name_intern) the value of the column from table adm_keymanager_fields
-     * @param string $fieldNameIntern Expects the @b kmf_name_intern of table @b adm_keymanager_fields
-     * @param string $column          The column name of @b adm_keymanager_fields for which you want the value
+     * returns for a fieldname intern (imf_name_intern) the value of the column from table adm_inventory_manager_fields
+     * @param string $fieldNameIntern Expects the @b imf_name_intern of table @b adm_inventory_manager_fields
+     * @param string $column          The column name of @b adm_inventory_manager_fields for which you want the value
      * @param string $format          Optional the format (is necessary for timestamps)
      * @return mixed
      */
@@ -89,9 +89,9 @@ class Keys
         {
         	$value = $this->mKeyFields[$fieldNameIntern]->getValue($column, $format);
         	
-        		if ($column == 'kmf_value_list')
+        		if ($column == 'imf_value_list')
         	 	{
-        	 		if ($this->mKeyFields[$fieldNameIntern]->getValue('kmf_type') === 'DROPDOWN' || $this->mKeyFields[$fieldNameIntern]->getValue('kmf_type') === 'RADIO_BUTTON')
+        	 		if ($this->mKeyFields[$fieldNameIntern]->getValue('imf_type') === 'DROPDOWN' || $this->mKeyFields[$fieldNameIntern]->getValue('imf_type') === 'RADIO_BUTTON')
         	 		{
         	 			$value = $this->getListValue($fieldNameIntern, $value, $format);
         	 		}
@@ -109,9 +109,9 @@ class Keys
     }
 
     /**
-     * returns for a fieldname intern (kmf_name_intern) the value of the column from table adm_keymanager_fields
-     * @param string $fieldNameIntern Expects the @b kmf_name_intern of table @b adm_keymanager_fields
-     * @param string $column          The column name of @b adm_keymanager_fields for which you want the value
+     * returns for a fieldname intern (imf_name_intern) the value of the column from table adm_inventory_manager_fields
+     * @param string $fieldNameIntern Expects the @b imf_name_intern of table @b adm_inventory_manager_fields
+     * @param string $column          The column name of @b adm_inventory_manager_fields for which you want the value
      * @param string $format          Optional the format (is necessary for timestamps)
      * @return mixed
      */
@@ -125,7 +125,7 @@ class Keys
     				 
     	foreach ($arrListValues as $key => &$listValue)
     	{
-    		if ($this->mKeyFields[$fieldNameIntern]->getValue('kmf_type') === 'RADIO_BUTTON')
+    		if ($this->mKeyFields[$fieldNameIntern]->getValue('imf_type') === 'RADIO_BUTTON')
     		{
     			// if value is imagefile or imageurl then show image
     			if (strpos(admStrToLower($listValue), '.png') > 0 || strpos(admStrToLower($listValue), '.jpg') > 0)
@@ -180,9 +180,9 @@ class Keys
     }
     
     /**
-     * returns for field id (kmf_id) the value of the column from table adm_keymanager_fields
-     * @param int    $fieldId Expects the @b kmf_id of table @b adm_keymanager_fields
-     * @param string $column  The column name of @b adm_keymanager_fields for which you want the value
+     * returns for field id (imf_id) the value of the column from table adm_inventory_manager_fields
+     * @param int    $fieldId Expects the @b imf_id of table @b adm_inventory_manager_fields
+     * @param string $column  The column name of @b adm_inventory_manager_fields for which you want the value
      * @param string $format  Optional the format (is necessary for timestamps)
      * @return string
      */
@@ -190,7 +190,7 @@ class Keys
     {
         foreach ($this->mKeyFields as $field)
         {
-            if ((int) $field->getValue('kmf_id') === (int) $fieldId)
+            if ((int) $field->getValue('imf_id') === (int) $fieldId)
             {
                 return $field->getValue($column, $format);
             }
@@ -220,8 +220,8 @@ class Keys
             // create html for each field type
             $htmlValue = $value;
 
-            $kmfType = $this->mKeyFields[$fieldNameIntern]->getValue('kmf_type');
-            switch ($kmfType)
+            $imfType = $this->mKeyFields[$fieldNameIntern]->getValue('imf_type');
+            switch ($imfType)
             {
                 case 'CHECKBOX':
                     if ($value == 1)
@@ -249,13 +249,13 @@ class Keys
                     $arrListValuesWithKeys = array(); // array with list values and keys that represents the internal value
 
                     // first replace windows new line with unix new line and then create an array
-                    $valueFormated = str_replace("\r\n", "\n", $this->mKeyFields[$fieldNameIntern]->getValue('kmf_value_list', 'database'));
+                    $valueFormated = str_replace("\r\n", "\n", $this->mKeyFields[$fieldNameIntern]->getValue('imf_value_list', 'database'));
                     $arrListValues = explode("\n", $valueFormated);
 
                     foreach ($arrListValues as $index => $listValue)
                     {
                         // if value is imagefile or imageurl then show image
-                        if ($kmfType === 'RADIO_BUTTON' && (Image::isFontAwesomeIcon($listValue)
+                        if ($imfType === 'RADIO_BUTTON' && (Image::isFontAwesomeIcon($listValue)
                         || StringUtils::strContains($listValue, '.png', false) || StringUtils::strContains($listValue, '.jpg', false))) // TODO: simplify check for images
                         {
                             // if there is imagefile and text separated by | then explode them
@@ -266,7 +266,7 @@ class Keys
                             else
                             {
                                 $listValueImage = $listValue;
-                                $listValueText  = $this->getValue('kmf_name');
+                                $listValueText  = $this->getValue('imf_name');
                             }
 
                             // if text is a translation-id then translate it
@@ -295,7 +295,7 @@ class Keys
         // special case for type CHECKBOX and no value is there, then show unchecked checkbox
         else
         {
-            if ($this->mKeyFields[$fieldNameIntern]->getValue('kmf_type') === 'CHECKBOX')
+            if ($this->mKeyFields[$fieldNameIntern]->getValue('imf_type') === 'CHECKBOX')
             {
                 $value = '<i class="fas fa-square"></i>';
             }
@@ -309,7 +309,7 @@ class Keys
      * format = 'd.m.Y' : a date or timestamp field accepts the format of the PHP date() function @n
      * format = 'html'  : returns the value in html-format if this is necessary for that field type @n
      * format = 'database' : returns the value that is stored in database with no format applied
-     * @param string $fieldNameIntern Expects the @b kmf_name_intern of table @b adm_keymanager_fields
+     * @param string $fieldNameIntern Expects the @b imf_name_intern of table @b adm_inventory_manager_fields
      * @param string $format          Returns the field value in a special format @b text, @b html, @b database
      *                                or datetime (detailed description in method description)
      * @return string|int|bool Returns the value for the column.
@@ -321,16 +321,16 @@ class Keys
         // exists a key field with that name ?
         // then check if key has a data object for this field and then read value of this object
         if (array_key_exists($fieldNameIntern, $this->mKeyFields)
-        &&  array_key_exists($this->mKeyFields[$fieldNameIntern]->getValue('kmf_id'), $this->mKeyData))
+        &&  array_key_exists($this->mKeyFields[$fieldNameIntern]->getValue('imf_id'), $this->mKeyData))
         {
-            $value = $this->mKeyData[$this->mKeyFields[$fieldNameIntern]->getValue('kmf_id')]->getValue('kmd_value', $format);
+            $value = $this->mKeyData[$this->mKeyFields[$fieldNameIntern]->getValue('imf_id')]->getValue('imd_value', $format);
 
             if ($format === 'database')
             {
                 return $value;
             }
 
-            switch ($this->mKeyFields[$fieldNameIntern]->getValue('kmf_type'))
+            switch ($this->mKeyFields[$fieldNameIntern]->getValue('imf_type'))
             {
                 case 'DATE':
                     if ($value !== '')
@@ -358,7 +358,7 @@ class Keys
                     // the value in db is only the position, now search for the text
                     if ($value > 0 && $format !== 'html')
                     {                          
-                      	$valueList = $this->mKeyFields[$fieldNameIntern]->getValue('kmf_value_list', $format);
+                      	$valueList = $this->mKeyFields[$fieldNameIntern]->getValue('imf_value_list', $format);
                         $arrListValues = $this->getListValue($fieldNameIntern, $valueList, $format);
                     }
                     break;
@@ -417,7 +417,7 @@ class Keys
     
 
     /**
-     * Reads the key data of all key fields out of database table @b adm_keymanager_data
+     * Reads the key data of all key fields out of database table @b adm_inventory_manager_data
      * and adds an object for each field data to the @b mKeyData array.
      * If profile fields structure wasn't read, this will be done before.
      * @param int $keyId         The id of the key for which the key data should be read.
@@ -440,19 +440,19 @@ class Keys
     
     		// read all key data
     		$sql = 'SELECT *
-                      FROM '.TBL_KEYMANAGER_DATA.'
-                INNER JOIN '.TBL_KEYMANAGER_FIELDS.'
-                        ON kmf_id = kmd_kmf_id
-                     WHERE kmd_kmk_id = ? ';
+                      FROM '.TBL_INVENTORY_MANAGER_DATA.'
+                INNER JOIN '.TBL_INVENTORY_MANAGER_FIELDS.'
+                        ON imf_id = imd_imf_id
+                     WHERE imd_imk_id = ? ';
     		$keyDataStatement = $this->mDb->queryPrepared($sql, array($keyId));
     
     		while ($row = $keyDataStatement->fetch())
     		{
-    			if (!array_key_exists($row['kmd_kmf_id'], $this->mKeyData))
+    			if (!array_key_exists($row['imd_imf_id'], $this->mKeyData))
     			{
-    				$this->mKeyData[$row['kmd_kmf_id']] = new TableAccess($this->mDb, TBL_KEYMANAGER_DATA, 'kmd');
+    				$this->mKeyData[$row['imd_imf_id']] = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_DATA, 'imd');
     			}
-    			$this->mKeyData[$row['kmd_kmf_id']]->setArray($row);
+    			$this->mKeyData[$row['imd_imf_id']]->setArray($row);
     		}
     	}
     	else 
@@ -477,7 +477,7 @@ class Keys
     		}
     		
     		// if value exists and new value is empty then delete entry
-    		if ($value->getValue('kmd_id') > 0 && $value->getValue('kmd_value') === '')
+    		if ($value->getValue('imd_id') > 0 && $value->getValue('imd_value') === '')
     		{
     			$value->delete();
     		}
@@ -491,8 +491,8 @@ class Keys
     	// why !$this->newKey -> updateFingerPrint will be done in getNewKeyId
     	if (!$this->newKey && $this->columnsValueChanged)
     	{
-    		$updateKey = new TableAccess($this->mDb, TBL_KEYMANAGER_KEYS, 'kmk', $this->mKeyId);
-    		$updateKey->setValue('kmk_usr_id_change', NULL, false);
+    		$updateKey = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_KEYS, 'imk', $this->mKeyId);
+    		$updateKey->setValue('imk_usr_id_change', NULL, false);
     		$updateKey->save();
     	}
     	
@@ -502,7 +502,7 @@ class Keys
     }
     
     /**
-     * Reads the key fields structure out of database table @b adm_keymanager_fields
+     * Reads the key fields structure out of database table @b adm_inventory_manager_fields
      * and adds an object for each field structure to the @b mKeyFields array.
      * @param int $organizationId The id of the organization for which the key fields
      *                            structure should be read.
@@ -514,19 +514,19 @@ class Keys
     	$this->clearKeyData();
     
     	$sql = 'SELECT *
-                  FROM '.TBL_KEYMANAGER_FIELDS.'
-                 WHERE kmf_org_id IS NULL
-                    OR kmf_org_id = ? ';
+                  FROM '.TBL_INVENTORY_MANAGER_FIELDS.'
+                 WHERE imf_org_id IS NULL
+                    OR imf_org_id = ? ';
     	$statement = $this->mDb->queryPrepared($sql, array($organizationId));
 
     	while ($row = $statement->fetch())
     	{
-    		if (!array_key_exists($row['kmf_name_intern'], $this->mKeyFields))
+    		if (!array_key_exists($row['imf_name_intern'], $this->mKeyFields))
     		{
-    			$this->mKeyFields[$row['kmf_name_intern']] = new TableAccess($this->mDb, TBL_KEYMANAGER_FIELDS, 'kmf');
+    			$this->mKeyFields[$row['imf_name_intern']] = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_FIELDS, 'imf');
     		}
-     		$this->mKeyFields[$row['kmf_name_intern']]->setArray($row);
-     		$this->keyFieldsSort[$row['kmf_name_intern']] = $row['kmf_sequence'];
+     		$this->mKeyFields[$row['imf_name_intern']]->setArray($row);
+     		$this->keyFieldsSort[$row['imf_name_intern']] = $row['imf_sequence'];
     	}
     	
     	array_multisort($this->keyFieldsSort, SORT_ASC, $this->mKeyFields);
@@ -534,7 +534,7 @@ class Keys
     
     
     /**
-     * Reads the keys out of database table @b adm_keymanager_keys
+     * Reads the keys out of database table @b adm_inventory_manager_keys
      * and stores the values to the @b keys array.
      * @param int $organizationId The id of the organization for which the keys should be read.
      */
@@ -546,27 +546,27 @@ class Keys
     	$sqlWhereCondition = '';
     	if (!$this->showFormerKeys)
     	{
-    		$sqlWhereCondition .= 'AND kmk_former = 0';
+    		$sqlWhereCondition .= 'AND imk_former = 0';
     	}
     	
-    	$sql = 'SELECT DISTINCT kmk_id, kmk_former
-          	      		   FROM '.TBL_KEYMANAGER_KEYS.'
-          	         INNER JOIN '.TBL_KEYMANAGER_DATA.'
-                             ON kmd_kmk_id = kmk_id
-                          WHERE kmk_org_id IS NULL
-                             OR kmk_org_id = ?
+    	$sql = 'SELECT DISTINCT imk_id, imk_former
+          	      		   FROM '.TBL_INVENTORY_MANAGER_KEYS.'
+          	         INNER JOIN '.TBL_INVENTORY_MANAGER_DATA.'
+                             ON imd_imk_id = imk_id
+                          WHERE imk_org_id IS NULL
+                             OR imk_org_id = ?
                              '.$sqlWhereCondition.' ';
     	$statement = $this->mDb->queryPrepared($sql, array($organizationId));
 
     	while ($row = $statement->fetch())
     	{
-    		$this->keys[] = array('kmk_id' => $row['kmk_id'], 'kmk_former' => $row['kmk_former']);
+    		$this->keys[] = array('imk_id' => $row['imk_id'], 'imk_former' => $row['imk_former']);
     	} 
     }
 
  
     /**
-     * Reads the keys for an user out of database table @b adm_keymanager_keys
+     * Reads the keys for an user out of database table @b adm_inventory_manager_keys
      * and stores the values to the @b keys array.
      * @param int $organizationId The id of the organization for which the keys should be read.
      * @param int $userId The id of the user for which the keys should be read.
@@ -579,32 +579,32 @@ class Keys
         $sqlWhereCondition = '';
         if (!$this->showFormerKeys)
         {
-            $sqlWhereCondition .= 'AND kmk_former = 0';
+            $sqlWhereCondition .= 'AND imk_former = 0';
         }
 
-        $sql = 'SELECT DISTINCT kmk_id, kmk_former
-          	      		   FROM '.TBL_KEYMANAGER_DATA.'
-          	         INNER JOIN '.TBL_KEYMANAGER_FIELDS.'
-                             ON kmf_id = kmd_kmf_id
-                            AND kmf_id = ?
-                     INNER JOIN '.TBL_KEYMANAGER_KEYS.'
-                             ON kmk_id = kmd_kmk_id
-                          WHERE (kmk_org_id IS NULL
-                             OR kmk_org_id = ? )
-                            AND kmd_value = ?
+        $sql = 'SELECT DISTINCT imk_id, imk_former
+          	      		   FROM '.TBL_INVENTORY_MANAGER_DATA.'
+          	         INNER JOIN '.TBL_INVENTORY_MANAGER_FIELDS.'
+                             ON imf_id = imd_imf_id
+                            AND imf_id = ?
+                     INNER JOIN '.TBL_INVENTORY_MANAGER_KEYS.'
+                             ON imk_id = imd_imk_id
+                          WHERE (imk_org_id IS NULL
+                             OR imk_org_id = ? )
+                            AND imd_value = ?
                              '.$sqlWhereCondition.' ';
-        $statement = $this->mDb->queryPrepared($sql, array($this->getProperty('RECEIVER', 'kmf_id'), $organizationId, $userId));
+        $statement = $this->mDb->queryPrepared($sql, array($this->getProperty('RECEIVER', 'imf_id'), $organizationId, $userId));
         
         while ($row = $statement->fetch())
         {
-            $this->keys[] = array('kmk_id' => $row['kmk_id'], 'kmk_former' => $row['kmk_former']);
+            $this->keys[] = array('imk_id' => $row['imk_id'], 'imk_former' => $row['imk_former']);
         }
     }
     
     
     /**
-     * Set a new value for the key field of the table adm_keymanager_data.
-     * If the user log is activated than the change of the value will be logged in @b adm_keymanager_log.
+     * Set a new value for the key field of the table adm_inventory_manager_data.
+     * If the user log is activated than the change of the value will be logged in @b adm_inventory_manager_log.
      * The value is only saved in the object. You must call the method @b save to store the new value to the database
      * @param string $columnName The name of the database column whose value should get a new value or the
      *                           internal unique profile field name
@@ -615,22 +615,22 @@ class Keys
      */
     public function setValue($fieldNameIntern, $newValue, $checkValue = true)
     {
-    	$kmfId = $this->mKeyFields[$fieldNameIntern]->getValue('kmf_id');
+    	$imfId = $this->mKeyFields[$fieldNameIntern]->getValue('imf_id');
     	
-    	if (!array_key_exists($kmfId, $this->mKeyData) )
+    	if (!array_key_exists($imfId, $this->mKeyData) )
     	{
     		$oldFieldValue = '';
     	}
     	else 
     	{
-    		$oldFieldValue = $this->mKeyData[$kmfId]->getValue('kmd_value');
+    		$oldFieldValue = $this->mKeyData[$imfId]->getValue('imd_value');
     	}
     	
-    	// key data from adm_keymanager_fields table
+    	// key data from adm_inventory_manager_fields table
     	$newValue = (string) $newValue;
     
     	// format of date will be local but database has stored Y-m-d format must be changed for compare
-    	if($this->mKeyFields[$fieldNameIntern]->getValue('kmf_type') === 'DATE')
+    	if($this->mKeyFields[$fieldNameIntern]->getValue('imf_type') === 'DATE')
     	{
     	   $date = \DateTime::createFromFormat($GLOBALS['gSettingsManager']->getString('system_date'), $newValue);
     
@@ -648,23 +648,23 @@ class Keys
     
     	$returnCode = false;
     
-    	if (!array_key_exists($kmfId, $this->mKeyData) )
+    	if (!array_key_exists($imfId, $this->mKeyData) )
     	{
-    		$this->mKeyData[$kmfId] = new TableAccess($this->mDb, TBL_KEYMANAGER_DATA, 'kmd');
-    		$this->mKeyData[$kmfId]->setValue('kmd_kmf_id', $kmfId);
-    		$this->mKeyData[$kmfId]->setValue('kmd_kmk_id', $this->mKeyId);
+    		$this->mKeyData[$imfId] = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_DATA, 'imd');
+    		$this->mKeyData[$imfId]->setValue('imd_imf_id', $imfId);
+    		$this->mKeyData[$imfId]->setValue('imd_imk_id', $this->mKeyId);
     	}
     	
-    	$returnCode = $this->mKeyData[$kmfId]->setValue('kmd_value', $newValue);
+    	$returnCode = $this->mKeyData[$imfId]->setValue('imd_value', $newValue);
     			
         if ($returnCode && $GLOBALS['gSettingsManager']->getBool('profile_log_edit_fields'))
     	{
-    		$logEntry = new TableAccess($this->mDb, TBL_KEYMANAGER_LOG, 'kml');
-    		$logEntry->setValue('kml_kmk_id', $this->mKeyId);
-    		$logEntry->setValue('kml_kmf_id', $kmfId);
-    		$logEntry->setValue('kml_value_old', $oldFieldValue);
-    		$logEntry->setValue('kml_value_new', $newValue);
-    		$logEntry->setValue('kml_comment', '');
+    		$logEntry = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_LOG, 'iml');
+    		$logEntry->setValue('iml_imk_id', $this->mKeyId);
+    		$logEntry->setValue('iml_imf_id', $imfId);
+    		$logEntry->setValue('iml_value_old', $oldFieldValue);
+    		$logEntry->setValue('iml_value_new', $newValue);
+    		$logEntry->setValue('iml_comment', '');
     		$logEntry->save();
     	}
     
@@ -681,27 +681,27 @@ class Keys
      	//If an error occured while generating a key, there is a KeyId but no data for that key.
     	//the following routine deletes these unused KeyIds
   		$sql = 'SELECT *
-          	      FROM '.TBL_KEYMANAGER_KEYS.'
-             LEFT JOIN '.TBL_KEYMANAGER_DATA.'
-                    ON kmd_kmk_id = kmk_id
-                 WHERE kmd_kmk_id is NULL ';
+          	      FROM '.TBL_INVENTORY_MANAGER_KEYS.'
+             LEFT JOIN '.TBL_INVENTORY_MANAGER_DATA.'
+                    ON imd_imk_id = imk_id
+                 WHERE imd_imk_id is NULL ';
     	$statement = $this->mDb->queryPrepared($sql);
    
     	while ($row = $statement->fetch())
     	{
-    		$delKey = new TableAccess($this->mDb, TBL_KEYMANAGER_KEYS, 'kmk', $row['kmk_id']);
+    		$delKey = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_KEYS, 'imk', $row['imk_id']);
     		$delKey->delete();
     	}
 
     	//generate a new KeyId
     	if ($this->newKey)
     	{
-    		$newKey = new TableAccess($this->mDb, TBL_KEYMANAGER_KEYS, 'kmk');
-    		$newKey->setValue('kmk_org_id', $GLOBALS['gCurrentOrgId']);
-    		$newKey->setValue('kmk_former', 0);
+    		$newKey = new TableAccess($this->mDb, TBL_INVENTORY_MANAGER_KEYS, 'imk');
+    		$newKey->setValue('imk_org_id', $GLOBALS['gCurrentOrgId']);
+    		$newKey->setValue('imk_former', 0);
     		$newKey->save();
     	
-    		$this->mKeyId = $newKey->getValue('kmk_id');
+    		$this->mKeyId = $newKey->getValue('imk_id');
     		
     		// update key table
     		$this->readKeys($GLOBALS['gCurrentOrgId']);
