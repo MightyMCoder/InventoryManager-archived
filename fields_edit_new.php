@@ -131,8 +131,14 @@ else
     $form->addSelectBox('kmf_type', $gL10n->get('ORG_DATATYPE'), $keyFieldText,
                   array('property' => HtmlForm::FIELD_REQUIRED, 'defaultValue' => $keyField->getValue('kmf_type')));
 }
-$form->addMultilineTextInput('kmf_value_list', $gL10n->get('ORG_VALUE_LIST'), $keyField->getValue('kmf_value_list', 'database'), 6,
-                       array('property' => HtmlForm::FIELD_REQUIRED, 'helpTextIdLabel' => 'ORG_VALUE_LIST_DESC'));
+
+$form->addMultilineTextInput(
+    'kmf_value_list', 
+    $gL10n->get('ORG_VALUE_LIST'), 
+    (string) $keyField->getValue('kmf_value_list', 'database'),
+    6,
+    array('property' => HtmlForm::FIELD_REQUIRED, 'helpTextIdLabel' => 'ORG_VALUE_LIST_DESC')
+);
 
 if ($keyField->getValue('kmf_system') != 1)
 {
@@ -140,7 +146,12 @@ if ($keyField->getValue('kmf_system') != 1)
 	    array('property' => HtmlForm::FIELD_DEFAULT,  'icon' => 'fa-asterisk'));
 }
 
-$form->addMultilineTextInput('kmf_description', $gL10n->get('SYS_DESCRIPTION'), $keyField->getValue('kmf_description'), 3);
+$form->addMultilineTextInput(
+    'kmf_description', 
+    $gL10n->get('SYS_DESCRIPTION'), 
+    $keyField->getValue('kmf_description'), 
+    3
+);
 
 $form->addSubmitButton('btn_save', $gL10n->get('SYS_SAVE'), array('icon' => 'fa-check', 'class' => 'offset-sm-3'));
 $form->addHtml(admFuncShowCreateChangeInfoById(
